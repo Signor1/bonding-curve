@@ -8,3 +8,7 @@ license = "MIT"
 [dependencies]
 fixed = "1.23"
 thiserror = "1.0"
+
+[lib]
+doctest = false
+test = false
