@@ -1,14 +1,27 @@
-pub fn add(left: u64, right: u64) -> u64 {
-    left + right
-}
+mod bancor;
+mod bonding_curve_trait;
+mod errors;
+
+pub use self::bancor::Bancor;
+pub use bonding_curve_trait::BondingCurve;
+pub use errors::BondingCurveError;
 
 #[cfg(test)]
 mod tests {
     use super::*;
+    use fixed::types::I64F64;
 
     #[test]
-    fn it_works() {
-        let result = add(2, 2);
-        assert_eq!(result, 4);
+    fn test_bancor_valid() {
+        let curve = bancor::Bancor::new(1000, 10000, 0.2).unwrap();
+        let price = curve.get_price().unwrap();
+        let expected = I64F64::from_num(0.5);
+        let tolerance = I64F64::from_num(0.0000001);
+        assert!(
+            (price - expected).abs() < tolerance,
+            "Price {} is not approximately equal to {}",
+            price,
+            expected
+        );
     }
 }
