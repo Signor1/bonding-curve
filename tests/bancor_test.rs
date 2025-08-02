@@ -206,10 +206,48 @@ fn test_bancor_buy_and_sell_token() {
 #[test]
 fn test_bancor_insufficient_reserve() {
     let mut curve = Bancor::new(100, 10000, 0.2).unwrap();
-    let result = curve.sell_token(I64F64::from_num(100000)); // Price = 0.05, reserve needed = 500
+    let result = curve.sell_token(I64F64::from_num(50000)); // Price = 0.05, reserve needed = 500
     assert!(result.is_err());
     assert!(matches!(
         result,
         Err(BondingCurveError::InvalidInput(msg)) if msg.contains("token amount")
+    ));
+}
+
+#[test]
+fn test_bancor_invalid_buy_inputs() {
+    let mut curve = Bancor::new(1000, 10000, 0.2).unwrap();
+    let result = curve.buy_token(I64F64::from_num(0));
+    assert!(matches!(
+        result,
+        Err(BondingCurveError::InvalidInput(msg)) if msg.contains("amount must be positive")
+    ));
+
+    let result = curve.buy_token(I64F64::from_num(-100));
+    assert!(matches!(
+        result,
+        Err(BondingCurveError::InvalidInput(msg)) if msg.contains("Reserve amount must be positive")
+    ));
+}
+
+#[test]
+fn test_bancor_invalid_sell_inputs() {
+    let mut curve = Bancor::new(1000, 10000, 0.2).unwrap();
+    let result = curve.sell_token(I64F64::from_num(0));
+    assert!(matches!(
+        result,
+        Err(BondingCurveError::InvalidInput(msg)) if msg.contains("Invalid token amount")
+    ));
+
+    let result = curve.sell_token(I64F64::from_num(-100));
+    assert!(matches!(
+        result,
+        Err(BondingCurveError::InvalidInput(msg)) if msg.contains("Invalid token amount")
+    ));
+
+    let result = curve.sell_token(I64F64::from_num(20000));
+    assert!(matches!(
+        result,
+        Err(BondingCurveError::InvalidInput(msg)) if msg.contains("Invalid token amount")
     ));
 }
