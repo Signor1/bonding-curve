@@ -6,8 +6,9 @@ description = "A modular Rust library for implementing bonding curves, including
 license = "MIT"
 
 [dependencies]
-fixed = "1.23"
+fixed = "=1.23.0"
 thiserror = "1.0"
+libm = "0.2"
 
 [lib]
 doctest = false
