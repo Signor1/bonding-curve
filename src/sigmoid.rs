@@ -10,9 +10,24 @@ pub struct Sigmoid {
     pub token_supply: I64F64,
 }
 
+/*
+* P = M / (1 + e^-k(S - m))
+* where:
+* M is max_price,
+* k is steepness,
+* m is midpoint,
+* S is token_supply.
+*/
+
 impl Sigmoid {
     pub fn new(max_price: f64, steepness: f64, midpoint: f64) -> Result<Self, BondingCurveError> {
-        if max_price <= 0.0 || steepness <= 0.0 || midpoint < 0.0 {
+        if max_price <= 0.0
+            || steepness <= 0.0
+            || midpoint < 0.0
+            || !max_price.is_finite()
+            || !steepness.is_finite()
+            || !midpoint.is_finite()
+        {
             return Err(BondingCurveError::InvalidInput("Invalid parameters".into()));
         }
         Ok(Sigmoid {
